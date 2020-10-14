@@ -1,0 +1,74 @@
+version: "3.8"
+services:
+  node:
+    build: 
+      context: '..'
+      dockerfile: './.docker/node/Dockerfile'
+      args: 
+        - CUSTOM_NODE_VERSION=${NODE_VERSION}
+    container_name: ${COMPOSE_PROJECT_NAME}_node
+    environment: 
+      - NODE_ENV=${NODE_ENV}
+    expose: 
+      - 3000
+    networks:
+      - ee
+    ports:
+      - 3000:3000
+    volumes:
+      - ../:/usr/src/app
+      - /usr/src/app/node_modules # volume to keep node_modules inside the container
+  php:
+    build: 
+      context: './php/'
+      args: 
+        - CUSTOM_PHP_VERSION=${PHP_VERSION}
+    container_name: ${COMPOSE_PROJECT_NAME}_php
+    networks:
+      - ee
+    environment: 
+      - PHP_OPCACHE_VALIDATE_TIMESTAMPS=1
+      - PHP_OPCACHE_MAX_ACCELERATED_FILES=10000
+      - PHP_OPCACHE_MEMORY_CONSUMPTION=192
+      - PHP_OPCACHE_MAX_WASTED_PERCENTAGE=10
+    volumes:
+      - ../:/var/www/html/:delegated
+  apache:
+    build: 
+      context: './apache/'
+      args: 
+        - CUSTOM_APACHE_VERSION=${APACHE_VERSION}
+    container_name: ${COMPOSE_PROJECT_NAME}_apache
+    depends_on:
+      - php
+      - mysql
+    networks:
+      - ee
+    ports:
+      - "443:443"
+    volumes:
+      - ../public/:/var/www/html/:delegated
+  mysql:
+    build: 
+      context: './mysql/'
+      args: 
+        - CUSTOM_MYSQL_VERSION=${MYSQL_VERSION}
+    container_name: ${COMPOSE_PROJECT_NAME}_mysql
+    networks: 
+      ee:
+        aliases: 
+          - db
+    ports: 
+      - "6033:3306"
+    environment:
+      - MYSQL_DATABASE=app
+      - MYSQL_USER=app
+      - MYSQL_PASSWORD=password
+      - MYSQL_ROOT_PASSWORD=rootpassword
+    volumes: 
+      - mysql_database:/var/lib/mysql
+      - ../.db/:/tmp/:delegated
+networks: 
+  ee:
+volumes:
+  mysql_database:  

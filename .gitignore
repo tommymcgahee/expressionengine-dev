@@ -1,0 +1,4 @@
+.docker/apache/*.crt
+.docker/apache/*.key
+.DS_Store
+node_modules

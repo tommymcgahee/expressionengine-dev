@@ -1,0 +1,28 @@
+{
+  "name": "expression_dev", 
+  "description": "Local dev environment for ExpressionEngine.",
+  "version": "1.0.0",
+  "license": "Apache",
+  "repository": {
+    "type": "git", 
+    "url": "https://github.com/tommymcgahee/expressionengine-dev.git"
+  },
+  "author": "Tommy McGahee",
+  "scripts": {
+    "serve": "cross-env NODE_ENV=development concurrently \"postcss ./src/css/tailwind.css -o ./public/assets/css/tailwind.css --watch\" \"browser-sync start --proxy \"https://apache\" --https --no-open --files \"./public/assets/css/*.css\"\"",
+    "development": "cross-env NODE_ENV=development postcss ./src/css/tailwind.css -o ./public/assets/css/tailwind.css",
+    "production": "cross-env NODE_ENV=production postcss ./src/css/tailwind.css -o ./public/assets/css/tailwind.css",
+    "start": "npm run serve"
+  },
+  "dependencies": {
+    "autoprefixer": "^9.8.6",
+    "tailwindcss": "^1.7.2"
+  },
+  "devDependencies": {
+    "browser-sync": "^2.26.12",
+    "concurrently": "^5.3.0",
+    "cross-env": "^7.0.2",
+    "cssnano": "^4.1.10",
+    "postcss-cli": "^7.1.1"
+  }
+}                   
